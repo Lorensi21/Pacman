@@ -4,22 +4,23 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-public class Map extends JFrame{
-    Game world= new Game();
-    Drawing pac = new Drawing(world);
+public class Map extends JFrame implements Serializable {
+    Game game = new Game();
+    Drawing pac = new Drawing(game);
     public List<HighScore> highScores = new ArrayList<>();
     public Map(){
         super("Pacman");
-        setBackground(Color.WHITE);
-        setSize(world.getWidth()*40, world.getHeight()*40);
+        pac.setBackground(Color.BLACK);
+        setSize(game.getWidth()*40, game.getHeight()*40);
         add(pac);
-        addKeyListener(new Movement(world));
+        addKeyListener(new Movement(game));
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
+        setLocationRelativeTo(null);
     }
     private void goToMainMenu() {
-        Menu menu = new Menu();
+        Menu menu = new Menu(this);
         menu.setVisible(true);
         dispose();
     }
@@ -39,7 +40,7 @@ public class Map extends JFrame{
         while (true) {
             try {
                 score = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter your score:", "Game Over", JOptionPane.PLAIN_MESSAGE));
-                if (score < 0 || score > 270) {
+                if (score < 0 || score > 214) {
                     throw new IllegalArgumentException("Invalid score. Please enter a score between 0 and 270.");
                 }
                 break;
@@ -53,12 +54,11 @@ public class Map extends JFrame{
                 HighScore newHighScore = new HighScore(playerName, score);
         highScores.add(newHighScore);
         saveHighScores();
-        showHighScores();
+        goToMainMenu();
     }
 
     private void saveHighScores() {
         try {
-            // Serialize the high scores list and save it to a file
             FileOutputStream fileOut = new FileOutputStream("highscores.ser");
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(highScores);
@@ -72,7 +72,6 @@ public class Map extends JFrame{
 
     private void loadHighScores() {
         try {
-            // Read the serialized high scores file
             FileInputStream fileIn = new FileInputStream("highscores.ser");
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             highScores = (List<HighScore>) objectIn.readObject();
@@ -85,38 +84,30 @@ public class Map extends JFrame{
     }
 
     public void showHighScores() {
-        JTextArea highScoresArea = new JTextArea();
-        highScoresArea.setEditable(false);
+        loadHighScores();
 
-        // Add each high score to the text area
+        DefaultListModel<String> model = new DefaultListModel<>();
+
         for (HighScore entry : highScores) {
-            highScoresArea.append(entry.getPlayerName() + ": " + entry.getScore() + "\n");
+            model.addElement(entry.getPlayerName() + ": " + entry.getScore());
         }
 
-        // Create a scroll pane to contain the text area
-        JScrollPane scrollPane = new JScrollPane(highScoresArea);
-        scrollPane.setPreferredSize(new Dimension(300, 200));
+        JList<String> highScoresList = new JList<>(model);
+        highScoresList.setBackground(Color.BLACK);
+        highScoresList.setForeground(Color.WHITE);
 
-        // Display the high scores in a separate window
+        JScrollPane scrollPane = new JScrollPane(highScoresList);
+        scrollPane.setPreferredSize(new Dimension(400, 400));
+
         JFrame highScoresFrame = new JFrame("High Scores");
         highScoresFrame.getContentPane().add(scrollPane);
         highScoresFrame.pack();
-        highScoresFrame.setLocationRelativeTo(null); // Center the window on the screen
+        highScoresFrame.setLocationRelativeTo(null);
         highScoresFrame.setVisible(true);
-//        // Load the high scores from the serialized file
-//        loadHighScores();
-//
-//        // Create a string representation of the high scores
-//        StringBuilder sb = new StringBuilder();
-//        for (HighScore entry : highScores) {
-//            sb.append(entry.getPlayerName()).append(": ").append(entry.getScore()).append("\n");
-//        }
-//
-//        // Show the high scores in a dialog box
-//        JOptionPane.showMessageDialog(null, sb.toString(), "Your score", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void start() {
+
         Thread gameThread = new Thread(() -> {
             setupKeyboardShortcut();
             Game.gameState = true;
@@ -129,9 +120,8 @@ public class Map extends JFrame{
                 }
             }
             endGame();
-            goToMainMenu();
         });
-
+        game.resetGame();
         gameThread.start();
     }
 

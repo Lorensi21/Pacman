@@ -1,7 +1,8 @@
+import javax.swing.*;
 import java.awt.Color;
 import java.util.ArrayList;
 public class Game {
-public String map =
+public static String map =
         "####################/n" +
                 "#..................#/n" +
                 "#.#.#.###.#.###.##..#/n" +
@@ -23,11 +24,11 @@ public String map =
                 "#...................#/n" +
                 "####################";
 
-    public int score = 0;
+    public static int score = 0;
     public static boolean gameState = true;
     private ArrayList<ArrayList<Character>> board = new ArrayList<>();
     public ArrayList<Ghost> ghosts = new ArrayList<>();
-    private int lives = 3;
+    public static int lives = 3;
     public float pacx = 9, pacy = 12;
     private final float startingPacX = 9;
     private final float startingPacY = 12;
@@ -48,7 +49,7 @@ public String map =
             board.add(row);
         }
         ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.cyan));
-        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.blue));
+        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.RED));
         ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.GREEN));
         ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.YELLOW));
     }
@@ -71,6 +72,31 @@ public String map =
     public int getLives(){
         return lives;
     }
+    public void resetGame() {
+        score = 0;
+        lives = 3;
+        pacx = startingPacX;
+        pacy = startingPacY;
+        pacdir = NOMOVEMENT;
+
+        // Reset the game board
+        board.clear();
+        for (String s : map.split("/n")) {
+            ArrayList<Character> row = new ArrayList<>();
+            for (int i = 0; i < s.length(); i++) {
+                row.add(s.charAt(i));
+            }
+            board.add(row);
+        }
+
+        // Reset the ghosts
+        ghosts.clear();
+        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.cyan));
+        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.RED));
+        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.GREEN));
+        ghosts.add(new Ghost((int) (Math.random() * 18) + 1, (int) (Math.random() * 8) + 1, Color.YELLOW));
+    }
+
     public void tick() {
         int x = (int) pacx;
         int y = (int) pacy;
@@ -95,54 +121,45 @@ public String map =
             setElement(x, y, ' ');
             score = score + 1;
         }
-        //moving ghosts
-//        for (Ghost ghost: ghosts){
-//            ghost.direction(this);
+       // moving ghosts
+        for (Ghost ghost: ghosts){
+            ghost.direction(this);
+
+//            float ghostX = ghost.x;
+//            float ghostY = ghost.y;
 //
-//            if(ghost.direction==LEFT)
-//                ghost.x-=.07;
-//            else if (ghost.direction==RIGHT)
-//                ghost.x+=.07;
-//            else if  (ghost.direction==UP)
-//                ghost.y-=.07;
-//            else
-//                ghost.y+=.07;
-//
-//            checkCollisionWithPacman(ghost, x, y);
-//        }
+//            if (ghost.direction == LEFT && getElement((int) ghostY, (int) ghostX - 1) != '#')
+//                ghost.x -= .07;
+//            else if (ghost.direction == RIGHT && getElement((int) ghostY, (int) ghostX + 1) != '#')
+//                ghost.x += .07;
+//            else if (ghost.direction == UP && getElement((int) ghostY - 1, (int) ghostX) != '#')
+//                ghost.y -= .07;
+//            else if (ghost.direction == DOWN && getElement((int) ghostY + 1, (int) ghostX) != '#')
+//                ghost.y += .07;
+//            else {
+//                continue;
+//            }
+
+            if(ghost.direction==LEFT)
+                ghost.x-=.07;
+            else if (ghost.direction==RIGHT)
+                ghost.x+=.07;
+            else if  (ghost.direction==UP)
+                ghost.y-=.07;
+            else if(ghost.direction==DOWN)
+                ghost.y+=.07;
+
+            checkCollisionWithPacman(ghost, x, y);
+        }
 
 //        for (Ghost ghost : ghosts) {
 //            ghost.direction(this);
 //            moveGhostRandomly(ghost);
 //            checkCollisionWithPacman(ghost, x, y);
 //        }
-
-        for (Ghost ghost : ghosts){
-             int NOMOVEMENT = 0;
-            int UP = 1, DOWN = 2;
-             int LEFT = 3, RIGHT = 4;
-             int pacdir = NOMOVEMENT;
-            int Gx = (int) pacx;
-            int Gy = (int) pacy;
-            if (getElement(Gy, Gx + 1) == '#' && pacdir == RIGHT || getElement(Gy, Gx - 1) == '#' && pacdir == LEFT
-                    || getElement(Gy + 1, Gx) == '#' && pacdir == DOWN || getElement(Gy - 1, Gx) == '#' && pacdir == UP)
-                pacdir = NOMOVEMENT;
-
-            //moving pac
-            if (pacdir == RIGHT)
-                ghost.x += .1;
-            else if (pacdir == LEFT)
-                ghost.x -= .1;
-            else if (pacdir == UP)
-                ghost.y -= .1;
-            else if (pacdir == DOWN)
-                ghost.y += .1;
-
-
+        System.out.println("Total score: " + score);
         }
 
-        System.out.println("Total score: " + score);
-    }
     private void checkCollisionWithPacman(Ghost ghost, int pacX, int pacY) {
         int ghostX = (int) ghost.x;
         int ghostY = (int) ghost.y;

@@ -6,27 +6,31 @@ import java.awt.event.ActionListener;
 
 public class Menu extends JFrame {
     private Map gameWindow;
-    Map map;
-
-    public Menu(){
+    public Menu(Map game1){
+        this.gameWindow = game1;
 
         setTitle("Main menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
         setLocationRelativeTo(null);
 
+
         JPanel panel = new JPanel();
+        panel.setBackground(Color.BLACK);
         panel.setLayout(new GridLayout(4,1,10,10));
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
         JLabel titleLabel = new JLabel("Pacman");
+        titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JButton game = new JButton("New Game");
+        game.setForeground(Color.BLUE);
         JButton score = new JButton("High Scores");
+        score.setForeground(Color.BLUE);
         JButton exit = new JButton("Exit");
-
+        exit.setForeground(Color.BLUE);
         panel.add(titleLabel);
         panel.add(game);
         panel.add(score);
@@ -39,8 +43,10 @@ public class Menu extends JFrame {
                 //if (size != -1) {
                     //createGameBoard(size);
                 //}
-                gameWindow = new Map();
-                gameWindow.start();
+                //gameWindow = new Map()
+                // ;
+                startGame();
+
 
             }
         });
@@ -49,20 +55,8 @@ public class Menu extends JFrame {
         score.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                map = new Map();
-                map.showHighScores();
-//                StringBuilder scoresBuilder = new StringBuilder();
-//                Map map = new Map();
-//                for (HighScore entry : map.highScores) {
-//                    scoresBuilder.append(entry.getPlayerName()).append(": ").append(entry.getScore()).append("\n");
-//                }
-//                String highScoresString = scoresBuilder.toString();
-//
-//                // Set the text of the JTextArea to the high scores string
-//                highScoresTextArea.setText(highScoresString);
-//
-//                // Show the high scores in a dialog window with scrollbars
-//                JOptionPane.showMessageDialog(null, scrollPane, "High Scores", JOptionPane.PLAIN_MESSAGE);
+                //gameWindow = new Map();
+                gameWindow.showHighScores();
             }
         });
 
@@ -74,6 +68,10 @@ public class Menu extends JFrame {
         });
 
         getContentPane().add(panel);
+    }
+    public void startGame() {
+        gameWindow.setVisible(true);
+        gameWindow.start();
     }
 
 

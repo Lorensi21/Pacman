@@ -15,10 +15,10 @@ public class Drawing extends JPanel{
                 char c= pacworld.getElement(x, y);
                 switch(c){
                     case '#':{
-                        g.setColor(Color.BLACK);
+                        g.setColor(Color.BLUE);
                         g.fillRect(y*40, x*40, 40, 40);break;}
                     case '.':
-                        g.setColor(Color.RED);
+                        g.setColor(Color.WHITE);
                         g.fillOval(y*40+40/3, x*40+40/3, 40/4, 40/4); break;
                     default: System.out.println(c);
                 }
@@ -64,12 +64,11 @@ public class Drawing extends JPanel{
 
         int heartSize = 20;
         int heartSpacing = 5;
-        int margin = 10;
 
         g.setColor(Color.RED);
         for (int i = 0; i < pacworld.getLives(); i++) {
-            int heartX = margin + i * (heartSize + heartSpacing);
-            int heartY = margin;
+            int heartX = 10 + i * (heartSize + heartSpacing);
+            int heartY = 10;
 
             // Draw heart shape
             g.fillArc(heartX, heartY, heartSize / 2, heartSize / 2, 0, 180);

@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class HighScore implements Serializable {
+public class HighScore implements Serializable{
 
     private String playerName;
     private int score;
@@ -17,5 +17,4 @@ public class HighScore implements Serializable {
     public int getScore() {
         return score;
     }
-
 }
